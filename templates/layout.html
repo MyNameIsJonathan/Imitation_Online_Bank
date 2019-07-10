@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Meta Tags -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <title>Jonathan's SynapseFi</title>
+
+    <!-- Google Fonts -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
+
+    <!-- Bootstrap 4 Stylesheet -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <!-- My Stylesheet -->
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='main.css') }}">
+
+</head>
+
+
+<body>
+
+  <header class="site-header">
+
+  </header>
+
+  <!-- If there are messages to show, show them -->
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      <ul class=flashes>
+      {% for message in messages %}
+      <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <span>{{ message }}</span>
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+      </div>
+      {% endfor %}
+      </ul>
+    {% endif %}
+  {% endwith %}
+
+  <main role="main" class="container">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="footer">
+      <div class="text-muted">Made with care by Jonathan Olson</div>
+      <div class="text-muted">2019</div>
+    </footer>
+
+</body>
+</html>
