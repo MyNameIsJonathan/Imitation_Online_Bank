@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, url_for, redirect, flash, session
-from flask_login import login_user, current_user, logout_user, login_required
+from flask_login import login_user, current_user, logout_user, login_required, LoginManager
 from flask_pymongo import PyMongo
 from flask_bcrypt import Bcrypt
 import synapsepy
@@ -7,8 +7,6 @@ import datetime
 
 import sys # TODO REMOVE
 # print(f'my string', file=sys.stderr) # TODO REMOVE
-
-
 
 # Create flask application
 app = Flask(__name__)
@@ -36,13 +34,35 @@ bcrypt.init_app(app)
 
 
 
+# TODO -- Try configuring this login manager instead of session
+# # Configure the login manager
+# login_manager = LoginManager()
+
+# #Set login route for the login required
+# login_manager.login_view = ('login') #Pass the function name of the route.
+# # Same as we do with the url_for function
+# login_manager.login_message_category = 'info' #Makes the alerts for required
+# # login a nice blue alert
+
+# # Initialize login manager
+# login_manager.init_app(app)
+
+# # Create a User class for logging in/out
+# class User(UserMixin):
+#     id = db.Column(db.Integer, primary_key=True)
+#     username = db.Column(db.String(20), unique=True, nullable=False)
+#     email = db.Column(db.String(120), unique=True, nullable=False)
+#     image_file = db.Column(db.String(20), nullable=False, default='default.jpg')
+#     password = db.Column(db.String(60), nullable=False)
+
+
+
 
 @app.route("/")
 def index():
-    if "email" in session:
-        return render_template('index.html', email=session['email'])
+    if "name" in session:
+        return render_template('index.html', name=session['name'])
     return render_template('index.html')
-
 
 
 @app.route('/login', methods=["GET", "POST"])
@@ -59,8 +79,10 @@ def login():
         # If user is found, make sure password matches. Login.
         if user:
             if bcrypt.check_password_hash(user['password'], request.form['password']):
+                # login_user(user)
                 session["email"] = request.form["email"]
-                return redirect(url_for('index'))
+                session['name'] = user['first_name'] + ' ' + user['last_name']
+                return redirect(url_for('account'))
 
             # If incorrect password
             flash('Invalid email/password combination. Please try again', 'danger')
@@ -74,6 +96,11 @@ def login():
     return render_template('login.html')
 
 
+@app.route("/logout")
+def logout():
+    session["email"] = None
+    session['name'] = None
+    return redirect(url_for('index'))
 
 
 @app.route('/register', methods=["GET", "POST"])
@@ -81,11 +108,8 @@ def register():
 
     if request.method == "POST":
 
-        # Select the users MongoDB collection
-        users = mongo.db.users
-
         # Look to see if account already exists for provided email
-        user = users.find_one({"email" : request.form["email"]}) 
+        user = mongo.db.users.find_one({"email" : request.form["email"]}) 
 
         # If user is not found, create an account
         if user is None:
@@ -102,7 +126,7 @@ def register():
             hashGovtID = bcrypt.generate_password_hash(request.form['govtid']).decode('utf-8')
 
             # Create account
-            users.insert({
+            mongo.db.users.insert({
                 "email": request.form["email"],
                 'password': hashPass,
                 'first_name': request.form['first_name'],
@@ -118,7 +142,64 @@ def register():
                 'govtid': hashGovtID
             })
 
-            session["email"] = request.form["email"]
+            # Convert date to datetime.date; get individual values
+            birth_date = datetime.datetime.strptime(request.form['birth_date'], "%Y-%m-%d").date()
+
+            # Artificially attribute IP, fingerprint. Fill in body with form values
+            ip = request.remote_addr if request.remote_addr else '1.2.3.132'
+            fingerprint = 'static_pin'
+            body = {
+                "logins": [
+                    {
+                        "email": "jonathanholson@gmail.com"
+                    }
+                ],
+                "phone_numbers": [
+                    "901.111.1111",
+                    "jonathanholson@gmail.com"
+                ],
+                "legal_names": [
+                    request.form['first_name'] + ' ' + request.form['last_name']
+                ],
+                "documents": [{
+                    "email":request.form["email"],
+                    "phone_number":request.form['tel'],
+                    "ip":ip,
+                    "name":request.form['first_name'] + ' ' + request.form['last_name'],
+                    "alias":"Test",
+                    "entity_type":"M",
+                    "entity_scope":"Arts & Entertainment",
+                    "day":birth_date.day,
+                    "month":birth_date.month,
+                    "year":birth_date.year,
+                    "address_street":request.form['street_address'],
+                    "address_city":request.form['city'],
+                    "address_subdivision":state,
+                    "address_postal_code":request.form['postal_code'],
+                    "address_country_code":request.form['country_code'],
+                    "desired_scope": "SEND|RECEIVE|TIER|1",
+                    "doc_option_key": "INVESTOR_DOCS",
+                    "docs_key": "GOVT_ID_ONLY",
+                    "virtual_docs":[{
+                        "document_value":request.form['ssn'],
+                        "document_type":"SSN"
+                    }],
+                    "physical_docs":[{
+                        "document_value": request.form['govtid'],
+                        "document_type": "GOVT_ID"
+                    }],
+                    "social_docs":[{
+                        "document_value":"https://www.facebook.com/valid",
+                        "document_type":"FACEBOOK"
+                    }]
+                }]
+            }
+
+            # Create user account
+            # client.create_user(body, ip, fingerprint=fingerprint)
+
+            # Report account creation successful, redirect
+            flash('Account creation successful! Please login', 'success')
             return redirect(url_for('login'))
 
         # If user is found, flash the user and redirect to login
@@ -128,8 +209,16 @@ def register():
     # If method is "GET", render register template
     return render_template('register.html')
 
-    
-    
+
+@app.route("/account")
+def account():
+    # If user is logged in, render account page
+    if "name" in session:
+        return render_template('account.html', name=session['name'])
+
+    # If user is not logged in, have them log in
+    flash('Please login first!')
+    return redirect(url_for('login'))
 
 
 
@@ -162,7 +251,7 @@ def create_account():
         birth_year = birth_date.year
 
         # Artificially attribute IP, fingerprint. Fill in body with form values
-        ip = '1.2.3.132'
+        ip = request.remote_addr if request.remote_addr else '1.2.3.132'
         fingerprint = 'static_pin'
         body = {
             "logins": [
@@ -180,7 +269,7 @@ def create_account():
             "documents": [{
                 "email":email,
                 "phone_number":phoneNumber,
-                "ip":"::1",
+                "ip":ip,
                 "name":first_name + ' ' + last_name,
                 "alias":"Test",
                 "entity_type":"M",
@@ -245,8 +334,8 @@ def send_money():
     birth_month = birth_date.month
     birth_year = birth_date.year
 
-    # Artificially attribute IP, fingerprint. Fill in body with form values
-    ip = '1.2.3.132'
+    # Get IP, fingerprint. Fill in body with form values
+    ip = request.remote_addr if request.remote_addr else '1.2.3.132'
     fingerprint = 'static_pin'
     body = {
         "logins": [
@@ -264,7 +353,7 @@ def send_money():
         "documents": [{
             "email":email,
             "phone_number":phoneNumber,
-            "ip":"::1",
+            "ip":ip,
             "name":first_name + ' ' + last_name,
             "alias":"Test",
             "entity_type":"M",
