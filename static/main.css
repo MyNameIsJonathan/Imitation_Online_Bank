@@ -1,6 +1,6 @@
 body {
-    background-color: #2756A7;
-    color: #F1EEEB;
+    background-color: rgb(240, 240, 240);
+    color: #333;
     font-weight: 100;
     font-family: 'Roboto', sans-serif;
 }
@@ -13,7 +13,8 @@ body {
 
 .form-control {
     background-color: transparent;
-    color: #CCC;
+    color: rgba(51, 51, 51, 0.6);
+    border-color: #333;
 }
 
 .footer {
@@ -34,4 +35,15 @@ a.button {
 
     text-decoration: none;
     color: initial;
+}
+
+.btn {
+    color: #333;
+    background-color: rgb(240, 240, 240);
+    border-color: #333;
+}
+
+.footer-muted {
+    color: rgb(48, 48, 48);
+    font-size: .85em;
 }

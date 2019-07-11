@@ -1,0 +1,21 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<div class="container">
+    <h1 class="mt-5">Hello!</h1>
+
+    <h4 class="mt-4 mb-4">Please login below</h4>
+    <form method="post" action="/login">
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input id="email" name="email" class="form-control" type="email" value="test@synapsefi.com">
+        </div>
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input id="password" name="password" class="form-control" type="password" placeholder="Password">
+        </div>
+        <button type="submit" class="btn mt-3">Login</button>
+    </form>
+</div>
+
+{% endblock content %}
