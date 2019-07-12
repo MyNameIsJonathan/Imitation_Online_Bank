@@ -1,0 +1,34 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<div class="container">
+    <h1 class="mt-5 mb-3">Update Account</h1>
+
+    <h3>{{ name }}</h3>
+
+    <form method="post" action="/update_account">
+
+        <div class="form-group">
+            <label for="update_choice">Choose Item to Update</label>
+            <select class="form-control" id="update_choice" name="update_choice">
+                <option value="email">Email</option>
+                <option value="name">Name</option>
+                <option value="phone_number">Phone Number</option>
+                <option value="birth_date">Birth Date <p class="text-muted">"MM-DD-YYYY"</p></option>
+                <option value="street_address">Street Address</option>
+                <option value="city">City</option>
+                <option value="state">State</option>
+                <option value="postal_code">Postal Code</option>
+                <option value="country_code">Country Code</option>
+                <option value="ssn">SSN</option>
+            </select>
+        </div>
+
+        <input id="update_value" name="update_value" class="form-control" type="text" placeholder="New Value">
+
+        <button type="submit" class="btn mt-3">Update Account</button>
+    </form>
+
+</div>
+
+{% endblock content %}
