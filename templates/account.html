@@ -3,13 +3,19 @@
 
 <div class="container">
 
-    <h1 class="mt-5 mb-3">My Account</h1>
+    <h1 class="mt-5 mb-3">{{ name }}'s Account</h1>
 
-    <h3>{{ name }}</h3>
+    <p class="text-muted mt-3 mb-3">Please select an option below</p>
 
-    <h2 class="mt-3 mb-3">Please select an option below</h2>
-
-    <a href="http://localhost:5000/update_account" class="btn-light">Update Account Info</a>
+    <div class="mt-3 mb-2">
+        <a href="http://localhost:5000/account_values" class="btn-light">View Account Info</a>
+    </div>
+    <div class="mt-3 mb-2">
+        <a href="http://localhost:5000/update_account" class="btn-light">Update Account Info</a>
+    </div>
+    <div class="mt-3 mb-2">
+        <a href="http://localhost:5000/open_deposit_account" class="btn-light">Open Deposit Account</a>
+    </div>
 
 </div>
 

@@ -1,0 +1,19 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<div class="container">
+
+    <h1 class="mt-5 mb-3">Open Deposit Account</h1>
+
+    <form method="post" action="/open_deposit_account">
+
+        <label for="account_nickname">Account Nickname</label>
+        <input id="account_nickname" name="account_nickname" class="form-control" type="text" placeholder="Account Nickname">
+
+        <button type="submit" class="btn mt-3">Open Deposit Account</button>
+
+    </form>
+
+</div>
+
+{% endblock content %}

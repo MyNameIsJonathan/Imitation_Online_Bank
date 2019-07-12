@@ -5,29 +5,6 @@ body {
     font-family: 'Roboto', sans-serif;
 }
 
-#footer {
-    height: 5em;
-    position: absolute; 
-    bottom: 0;
-}
-
-.form-control {
-    background-color: transparent;
-    color: rgba(51, 51, 51, 0.6);
-    border-color: #333;
-}
-
-.footer {
-    position: relative;
-    bottom: 0;
-    width: 100%;
-    height: 80px;
-    background-color: transparent;
-    display: flex;
-    align-items: center;
-    flex-direction: column;
-  }
-
 a.button {
     -webkit-appearance: button;
     -moz-appearance: button;
@@ -37,13 +14,40 @@ a.button {
     color: initial;
 }
 
+#footer {
+    height: 5em;
+    position: absolute; 
+    bottom: 0;
+}
+
+.footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 80px;
+    background-color: transparent;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+  }
+
+  .footer-muted {
+    color: rgb(48, 48, 48);
+    font-size: .85em;
+}
+
+.container {
+    max-width: 100%;
+}
+
+.form-control {
+    background-color: transparent;
+    color: rgba(51, 51, 51, 0.6);
+    border-color: #333;
+}
+
 .btn {
     color: #333;
     background-color: rgb(240, 240, 240);
     border-color: #333;
-}
-
-.footer-muted {
-    color: rgb(48, 48, 48);
-    font-size: .85em;
 }

@@ -52,7 +52,7 @@ def login():
         if user:
             if bcrypt.check_password_hash(user['password'], request.form['password']):
                 # login_user(user)
-                session["email"] = request.form["email"]
+                session['email'] = request.form['email']
                 session['name'] = user['first_name'] + ' ' + user['last_name']
                 session['id'] = user['synapse_id']
                 return redirect(url_for('account'))
@@ -77,7 +77,7 @@ def logout():
     return redirect(url_for('index'))
 
 
-@app.route('/register', methods=["GET", "POST"])
+@app.route("/register", methods=["GET", "POST"])
 def register():
 
     if request.method == "POST":
@@ -202,8 +202,32 @@ def account_values():
     if not "name" in session:
         flash('Please login first!')
         return redirect(url_for('login'))
-    
 
+    # Get user instance from Synapse
+    user = client.get_user(session['id'], full_dehydrate=True)
+
+    # Grab values to report
+    values = {
+        "name": user.body["documents"][0]["name"],
+        "email": user.body["documents"][0]["email"],
+        "phone_number": user.body["documents"][0][
+            "phone_number"
+        ],
+        "birth_date": str(user.body["documents"][0]["month"])
+        + "/"
+        + str(user.body["documents"][0]["day"])
+        + "/"
+        + str(user.body["documents"][0]["year"]),
+        "address_street": user.body['documents'][0]['address_street'],
+        "address_city": user.body['documents'][0]['address_city'],
+        "address_subdivision": user.body['documents'][0]['address_subdivision'],
+        "address_postal_code": user.body['documents'][0]['address_postal_code'],
+        "address_country_code": user.body['documents'][0]['address_country_code'],
+    }
+    
+    return render_template('account_values.html', 
+                           first_name=session['name'].split()[0], 
+                           values=values)
 
 
 @app.route("/update_account", methods=["GET", "POST"])
@@ -214,7 +238,7 @@ def update_account():
         return redirect(url_for('login'))
 
     # Get current user's id and synapse User account
-    user_synapse_id = mongo.db.users.find_one({"email" : session['email']})['synapse_id']
+    user_synapse_id = session['id']
     user = client.get_user(user_synapse_id, full_dehydrate=True)
 
     # If method is GET, pre-fill current account values in update form
@@ -279,6 +303,12 @@ def update_account():
     # Update account
     user.update_info(body)
 
+    # Update session values
+    if choice == 'email':
+        session['email'] = request.form['update_value']
+    elif choice == 'name':
+        session['name'] = request.form['update_value']
+
     # Refresh Account to show updated values
     user = client.get_user(user.id)
 
@@ -286,87 +316,73 @@ def update_account():
     return redirect(url_for('update_account'))
 
 
+@app.route("/open_deposit_account", methods=["GET", "POST"])
+def open_deposit_account():
+    # If user is not logged in, have them log in
+    if not "name" in session:
+        flash('Please login first!')
+        return redirect(url_for('login'))
+
+    # If method is GET, render html
+    if request.method == "GET":
+        return render_template('open_deposit_account.html')
+
+    # Select the current user's synapse account
+    user = client.get_user(session['id'])
+
+    # Create body to hold deposit account information
+    body = {
+        "type": "DEPOSIT-US",
+        "info": {
+            "nickname": request.form['account_nickname'],
+            "document_id": user.body['documents'][0]['id']
+        }
+    }
+
+    # Open deposit account
+    user.create_node(body, idempotency_key='123456')
+
+    flash('Account created successfully!', 'success')
+    return redirect(url_for('account'))
+
+
+@app.route("/close_deposit_account", methods=["GET", "POST"])
+def close_deposit_account():
+    # If user is not logged in, have them log in
+    if not 'name' in session:
+        flash('Please login first!')
+        return redirect(url_for('login'))
+
+    # Get user account
+    user = client.get_user(session['id'])
+
+    # If method if GET
+    if request.method == "GET":
+
+        # Get deposit account(s)
+        nodes = user.get_all_nodes().list_of_nodes
+        desposit_accounts = [node for node in nodes if node.body['type'] == 'DEPOSIT-US']
+
+        # Save account(s) in list of dicts
+        accounts = [
+            {'id': node.id, 'name': node.body['info']['nickname']}
+            for node in desposit_accounts
+        ]
+
+        return render_template('close_deposit_account.html', accounts=accounts)
+    
+    # If method is POST, get the chosen account, set to inactive
+    node = request.form['account_choice']
+    node.body['is_active'] = False
+
+    flash('Account successfully inactivate!', 'success')
+    return redirect(url_for('account'))
+
+
+
 @app.route("/view_savings", methods=["GET"])
 def view_savings():
     pass
 
 
-# TODO - Finalize this. Combine with html into one route. Then, allow login so we can access user information
-@app.route("/send_money", methods=["POST"])
-def send_money():
-
-    # Collect values from form
-    first_name = request.form['first_name']
-    last_name = request.form['last_name']
-    email = request.form["email"]
-    phoneNumber = request.form['phone_number']
-    birth_date = request.form['birth_date']
-    street_address = request.form['street_address']
-    city = request.form['city']
-    state = request.form['state']
-    postal_code = request.form['postal_code']
-    country_code = request.form['country_code']
-    ssn = request.form['ssn']
-    govtid = request.form['govtid']
-
-    # Convert date to datetime.date; get individual values
-    birth_date = datetime.datetime.strptime(birth_date_string, "%Y-%m-%d").date()
-    birth_day = birth_date.day
-    birth_month = birth_date.month
-    birth_year = birth_date.year
-
-    # Get IP, fingerprint. Fill in body with form values
-    ip = request.remote_addr if request.remote_addr else '1.2.3.132'
-    fingerprint = 'static_pin'
-    body = {
-        "logins": [
-            {
-                "email": "jonathanholson@gmail.com"
-            }
-        ],
-        "phone_numbers": [
-            "901.111.1111",
-            "jonathanholson@gmail.com"
-        ],
-        "legal_names": [
-            first_name + ' ' + last_name
-        ],
-        "documents": [{
-            "email":email,
-            "phone_number":phoneNumber,
-            "ip":ip,
-            "name":first_name + ' ' + last_name,
-            "alias":"Test",
-            "entity_type":"M",
-            "entity_scope":"Arts & Entertainment",
-            "day":2,
-            "month":5,
-            "year":1989,
-            "address_street":street_address,
-            "address_city":city,
-            "address_subdivision":state,
-            "address_postal_code":postal_code,
-            "address_country_code":country_code,
-            "desired_scope": "SEND|RECEIVE|TIER|1",
-            "doc_option_key": "INVESTOR_DOCS",
-            "docs_key": "GOVT_ID_ONLY",
-            "virtual_docs":[{
-                "document_value":ssn,
-                "document_type":"SSN"
-            }],
-            "physical_docs":[{
-                "document_value": govtid,
-                "document_type": "GOVT_ID"
-            }],
-            "social_docs":[{
-                "document_value":"https://www.facebook.com/valid",
-                "document_type":"FACEBOOK"
-            }]
-        }]
-    }
-
-    # Create user account
-    # client.create_user(body, ip, fingerprint=fingerprint)
-
-    return redirect(url_for('home'))
 
