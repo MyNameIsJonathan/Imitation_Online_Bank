@@ -1,32 +1,18 @@
 {% extends "layout.html" %}
 {% block content %}
 
-<div class="container">
+<div id="index-body" class="d-flex justify-content-center align-items-center">
 
-    {% if name %}
-        <h1 class="mt-5 mb-3">Welcome, {{ name }}!</h1>
-    {% else %}
-    <h1 class="mt-5 mb-3">Welcome!</h1>
-    {% endif %}
-
-    <h2 class="mt-3 mb-3">Please select an option below</h2>
-
-    {% if name %}
-       <div class="mt-5 mb-2">
-            <a href="http://localhost:5000/account" class="btn-light">Go To Account Home</a>
+    <div class="card d-flex" style="width: 18rem;">
+        <p class="display-3 d-flex justify-content-center mt-3">NE[R]O</p>
+        <div class="card-body">
+            <h5 class="card-title d-flex justify-content-center">Online Banking</h5>
+            <p class="card-text text-center">An online, neo banking project focused on providing users with banking and crypto currency features</p>
+            <div>
+                <a id="start-button" href="{{ url_for('register') }}" class="btn btn-dark">Start!</a>
+            </div>
         </div>
-        <div class="mt-3 mb-2">
-            <a href="http://localhost:5000/logout" class="btn-light">Logout</a>
-        </div>
-    {% else %}
-        <div class="mt-3 mb-2">
-            <a href="http://localhost:5000/register" class="btn-light">Register</a>
-        </div>
-        <div class="mt-3 mb-2">
-            <a href="http://localhost:5000/login" class="btn-light">Login</a>
-        </div>
-    {% endif %}
-
+    </div>
 </div>
 
 {% endblock content %}

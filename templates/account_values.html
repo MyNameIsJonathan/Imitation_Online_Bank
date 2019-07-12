@@ -50,12 +50,13 @@
     <a class="display-4">{{ values['address_country_code'] }}</a>
 
     <br>
+
     <div class="mt-5">
-        <a href="http://localhost:5000/account" class="btn-light">Return to Account Home</a>
+        <a class="btn btn-sm btn-outline-secondary" href="{{ url_for('account') }}">Return to Account Home</a>
     </div>
     
     <div class="mt-3 mb-3">
-        <a href="http://localhost:5000/update_account" class="btn-light">Update Account Info</a>
+        <a class="btn btn-sm btn-outline-secondary" href="{{ url_for('update_account') }}">Update Account Values</a>
     </div>
 
 

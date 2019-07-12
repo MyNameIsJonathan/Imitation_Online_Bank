@@ -3,16 +3,20 @@
 
 <div class="container">
 
-    <h1 class="mt-5 mb-3">Open Deposit Account</h1>
+    <h1 class="mt-5 mb-5">Open Deposit Account</h1>
 
     <form method="post" action="/open_deposit_account">
 
-        <label for="account_nickname">Account Nickname</label>
-        <input id="account_nickname" name="account_nickname" class="form-control" type="text" placeholder="Account Nickname">
+        <label for="account_nickname" class="mb-3">Account Nickname</label>
+        <input id="account_nickname" name="account_nickname" class="form-control mb-2" type="text" placeholder="Account Nickname">
 
-        <button type="submit" class="btn mt-3">Open Deposit Account</button>
+        <button type="submit" class="btn btn-outline-primary mt-5">Open Deposit Account</button>
 
     </form>
+
+    <div class="mt-5">
+        <a class="btn btn-sm btn-outline-secondary" href="{{ url_for('account') }}">Return to Account Home</a>
+    </div>
 
 </div>
 
