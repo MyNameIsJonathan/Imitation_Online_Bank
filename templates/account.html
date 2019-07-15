@@ -1,25 +1,43 @@
 {% extends "layout.html" %}
 {% block content %}
 
-<div class="container">
+<div class="d-flex flex-lg-column justify-content-center align-items-center">
 
-    <h1 class="mt-5 mb-3">{{ name }}'s Account</h1>
+    <div class="container centered-card d-flex flex-lg-column justify-content-center align-items-center">
+
+        <h1 class="mt-5 mb-3">{{ name }}'s Account</h1>
 
 
-    <p class="text-muted mt-3 mb-3">Please select an option below</p>
+        <p class="text-muted mt-3 mb-3">Please select an option below</p>
 
-    <div class="mt-3 mb-2">
-        <a class="btn btn-sm btn-outline-secondary" href="{{ url_for('account_values') }}">View Account Info</a>
-    </div>
-    <div class="mt-3 mb-2">
-        <a class="btn btn-sm btn-outline-secondary" href="{{ url_for('update_account') }}">Update Account Info</a>
-    </div>
-    <div class="mt-3 mb-2">
-        <a class="btn btn-sm btn-outline-secondary" href="{{ url_for('open_deposit_account') }}">Open Deposit Account</a>
-    </div>
-    <br>
-    <div class="mt-3 mb-2">
-        <a class="btn btn-sm btn-outline-secondary" href="{{ url_for('logout') }}">Logout</a>
+        <div class="narrow-container ">
+
+            <div class="mt-3 mb-2">
+                <a class="btn btn-sm btn-outline-secondary wide-button" href="{{ url_for('account_values') }}">View
+                    Account Info</a>
+            </div>
+            <div class="mt-3 mb-2">
+                <a class="btn btn-sm btn-outline-secondary wide-button" href="{{ url_for('update_account') }}">Update Account
+                    Info</a>
+            </div>
+            <div class="mt-3 mb-2">
+                <a class="btn btn-sm btn-outline-secondary wide-button" href="{{ url_for('open_deposit_account') }}">Open Deposit
+                    Account</a>
+            </div>
+            <div class="mt-3 mb-2">
+                <a class="btn btn-sm btn-outline-secondary wide-button" href="{{ url_for('close_deposit_account') }}">Close Deposit
+                    Account</a>
+            </div>
+            <div class="mt-3 mb-2">
+                <a class="btn btn-sm btn-outline-secondary wide-button" href="{{ url_for('view_active_deposit_accounts') }}">View
+                    Active
+                    Deposit Accounts</a>
+            </div>
+        </div <br>
+        <div class="mt-3 mb-2">
+            <a class="btn btn-sm btn-outline-secondary" href="{{ url_for('logout') }}">Logout</a>
+        </div>
+
     </div>
 
 </div>

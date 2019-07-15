@@ -12,23 +12,37 @@ body {
 }
 
 #main {
-    position: absolute;
-    top: 10vh;
-    padding: 0px;
-    max-height: 90vh;
+    position: relative;
+    min-height: 100vh;
+    padding: 0 0 4rem 0;
 }
 
 #index-body {
-    height: 80vh;
+    height: 100vh;
+    min-height: 80vh;
     background-color: #333;
 }
 
 #start-button {
     display: block;
+    width: 100%;
 }
 
 #navbar {
     height: 10vh;
+}
+
+#account-card-container {
+    height: 100%;
+    min-height: 80vh;
+}
+
+.navbar-brand{
+    font-size: 2.75em;
+}
+
+.nav-link{
+    font-size: 1.2em;
 }
 
 .bg-black {
@@ -37,16 +51,12 @@ body {
 
 .footer {
     position: absolute;
-    bottom: 0vh;
+    bottom: 0;
     width: 100%;
-    height: 10vh;
+    height: 4rem;
+    max-height: 80px;
     background-color: black;
     color: #cccccc;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 1em 0em;
-    flex-direction: column;
   }
 
 .container {
@@ -58,4 +68,37 @@ body {
     background-color: transparent;
     color: rgba(51, 51, 51, 0.6);
     border-color: #333;
+}
+
+.account-card {
+    width: 40%;
+    min-width: 17em;
+}
+
+.transfer {
+    width: 40%;
+    border: 2px solid black;
+    border-radius: 5px;
+    padding: 1em;
+}
+
+.centered-card {
+    width: 75%;
+}
+
+.wide-button {
+    display: block;   
+}
+
+.narrow-container {
+    width: 50%;
+}
+
+.underlined {
+    border-bottom: 2px solid black;
+    padding-bottom: .45em;
+}
+
+.width-75 {
+    width: 75%;
 }

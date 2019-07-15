@@ -1,24 +1,29 @@
 {% extends "layout.html" %}
 {% block content %}
 
-<div class="container">
-    <h1 class="mt-5 mb-3">Close Deposit Account</h1>
+<div class="d-flex flex-lg-column justify-content-center align-items-center">
 
-    <h3>{{ name }}</h3>
+    <div class="container centered-card">
 
-    <form method="post" action="/close_deposit_account">
+        <h1 class="mt-5 mb-5 underlined">Close Deposit Account</h1>
 
-        <div class="form-group">
-            <label for="account_choice">Choose Account to Close</label>
-            <select class="form-control" id="account_choice" name="account_choice">
-                {% for account in accounts %}
+        <h3>{{ name }}</h3>
+
+        <form method="post" action="/close_deposit_account">
+
+            <div class="form-group">
+                <h2 class="mb-3">Select Account</h2>
+                <select class="form-control" id="account_choice" name="account_choice">
+                    {% for account in accounts %}
                     <option value="{{  account['id']  }}">{{  account['name']  }}</option>
-                {% endfor %}
-            </select>
-        </div>
+                    {% endfor %}
+                </select>
+            </div>
 
-        <button type="submit" class="btn mt-3">Close Deposit Account</button>
-    </form>
+            <button type="submit" class="btn btn-outline-primary mt-3">Close Deposit Account</button>
+        </form>
+
+    </div>
 
 </div>
 

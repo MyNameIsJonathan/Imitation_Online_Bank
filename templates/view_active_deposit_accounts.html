@@ -1,0 +1,91 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<div id="account-card-container" class="d-flex justify-content-center align-items-center">
+
+    <div class="container width-75">
+
+        <h1 class="d-flex justify-content-center align-items-center mt-5 mb-5 underlined">{{ session['name'] }}'s
+            Deposit Accounts</h1>
+
+        <div class="d-flex flex-row justify-content-center align-items-center">
+
+            {% for node in activeDepositAccounts %}
+
+            <div class="card account-card d-inline-flex p-2">
+                <h3 class="card-header d-flex justify-content-center text-center">
+                    {{ node['node_name'] }}
+                </h3>
+                <div class="card-body">
+                    <p id="account_value" class="account_value display-3 d-flex justify-content-center">
+                        ${{ node['node_value'] }}</p>
+                    <p class="account_currency display-4 d-flex justify-content-center">{{ node['node_currency'] }}</p>
+                </div>
+                <a id="start-button"
+                    href="{{ url_for('artificially_fund_deposit_account', user_id=node['user_id'], node_id=node['node_id']) }}"
+                    class="btn btn-dark">Dummy Fund Account</a>
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+        <div>
+            <h1 class="d-flex justify-content-center align-items-center mt-5 mb-5">Transfer Funds Between Accounts</h1>
+        </div>
+
+        <div class="d-flex justify-content-center align-items-center mt-5 mb-5">
+
+            <div class="transfer">
+
+                <form method="post" action="/send_money_between_deposit_accounts">
+
+                    <div class="form-group">
+
+                        <label for="sender_node">
+                            <h3>From Account</h3>
+                        </label>
+                        <select class="form-control mb-5" id="sender_node" name="sender_node">
+                            {% for node in activeDepositAccounts %}
+                            <option value="{{ node['node_id'] }}">{{ node['node_name'] }}</option>
+                            {% endfor %}
+                        </select>
+
+                        <label for="receiver_node">
+                            <h3>To Account</h3>
+                        </label>
+                        <select class="form-control mb-5" id="receiver_node" name="receiver_node">
+                            {% for node in activeDepositAccounts[::-1] %}
+                            <option value="{{ node['node_id'] }}">{{ node['node_name'] }}</option>
+                            {% endfor %}
+                        </select>
+
+                        <p>
+                            <h3>Transfer Amount</h3>
+                        </p>
+
+                        <div class="input-group mb-5">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">$</span>
+                            </div>
+                            <input name="transfer_amount" type="text" class="form-control" aria-label="Transfer Amount"
+                                placeholder="0.00">
+                        </div>
+
+                        <input id="transfer_note" name="transfer_note" class="form-control mb-5" type="text"
+                            placeholder="Transaction note...">
+
+                    </div>
+
+                    <button id="start-button" type="submit" class="btn btn-dark">Transfer Funds</button>
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock content %}

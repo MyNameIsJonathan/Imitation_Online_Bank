@@ -4,6 +4,7 @@ from flask_pymongo import PyMongo
 from flask_bcrypt import Bcrypt
 import synapsepy
 import datetime
+import random
 
 import sys # TODO REMOVE
 # print(f'my string', file=sys.stderr) # TODO REMOVE
@@ -208,21 +209,21 @@ def account_values():
 
     # Grab values to report
     values = {
-        "name": user.body["documents"][0]["name"],
-        "email": user.body["documents"][0]["email"],
-        "phone_number": user.body["documents"][0][
+        "name": {'name': 'Name', 'value': user.body["documents"][0]["name"]},
+        "email": {'name': 'Email', 'value': user.body["documents"][0]["email"]},
+        "phone_number": {'name': 'Phone Number', 'value': user.body["documents"][0][
             "phone_number"
-        ],
-        "birth_date": str(user.body["documents"][0]["month"])
+        ]},
+        "birth_date": {'name': 'Birth Date', 'value': str(user.body["documents"][0]["month"])
         + "/"
         + str(user.body["documents"][0]["day"])
         + "/"
-        + str(user.body["documents"][0]["year"]),
-        "address_street": user.body['documents'][0]['address_street'],
-        "address_city": user.body['documents'][0]['address_city'],
-        "address_subdivision": user.body['documents'][0]['address_subdivision'],
-        "address_postal_code": user.body['documents'][0]['address_postal_code'],
-        "address_country_code": user.body['documents'][0]['address_country_code'],
+        + str(user.body["documents"][0]["year"])},
+        "address_street": {'name': 'Street Address', 'value': user.body['documents'][0]['address_street']},
+        "address_city": {'name': 'City', 'value': user.body['documents'][0]['address_city']},
+        "address_subdivision": {'name': 'State', 'value': user.body['documents'][0]['address_subdivision']},
+        "address_postal_code": {'name': 'Postal Code', 'value': user.body['documents'][0]['address_postal_code']},
+        "address_country_code": {'name': 'Country', 'value': user.body['documents'][0]['address_country_code']}
     }
     
     return render_template('account_values.html', 
@@ -303,11 +304,34 @@ def update_account():
     # Update account
     user.update_info(body)
 
-    # Update session values
+    # Update session values and mongodb
+    mongoUser = mongo.db.users.find_one({"email" : session["email"]})
     if choice == 'email':
         session['email'] = request.form['update_value']
+        mongo.db.users.update_one(
+            {'synapse_id': user.id},
+            {"$set": {
+                choice: request.form['update_value']}
+            },
+            upsert=False)
     elif choice == 'name':
+        names = request.form["update_value"].split()
         session['name'] = request.form['update_value']
+        mongo.db.users.update_many(
+            {'synapse_id': user.id},
+            {"$set": {
+                'first_name': names[0],
+                'last_name': names[1]}
+            },
+            upsert=False)
+    else:
+        mongo.db.users.update_one(
+            {'synapse_id': user.id},
+            {"$set": {
+                choice: request.form['update_value']}
+            },
+            upsert=False)
+
 
     # Refresh Account to show updated values
     user = client.get_user(user.id)
@@ -340,7 +364,7 @@ def open_deposit_account():
     }
 
     # Open deposit account
-    user.create_node(body, idempotency_key='123456')
+    user.create_node(body, idempotency_key=str(random.randint(100000, 999999)))
 
     flash('Account created successfully!', 'success')
     return redirect(url_for('account'))
@@ -379,10 +403,106 @@ def close_deposit_account():
     return redirect(url_for('account'))
 
 
+@app.route("/view_active_deposit_accounts")
+def view_active_deposit_accounts():
+    # If user is not logged in, have them log in
+    if not "name" in session:
+        flash('Please login first!')
+        return redirect(url_for('login'))
 
-@app.route("/view_savings", methods=["GET"])
-def view_savings():
-    pass
+    # Get user
+    user = client.get_user(session['id'], full_dehydrate=True)
+
+    # Get all nodes (accounts) of user; select only deposit accounts
+    nodes = user.get_all_nodes().list_of_nodes
+    depositAccounts = [node for node in nodes if (
+        node.body['type'] == 'DEPOSIT-US' and node.body['is_active'])]
+
+    # If no accounts found, inform user to open an account
+    if len(depositAccounts) == 0:
+        alert('No active deposit accounts found! Please open an account first', 'danger')
+        return redirect(url_for('open_deposit_account'))
+
+    # If accounts found, get their information
+    activeDepositAccounts = []
+
+    for i, node in enumerate(depositAccounts):
+        activeDepositAccounts.append({
+            'node_name': node.body['info']['nickname'],
+            'node_value': node.body['info']['balance']['amount'],
+            'node_currency': node.body['info']['balance']['currency'],
+            'user_id': user.id,
+            'node_id': node.id
+        })
+
+    return render_template('view_active_deposit_accounts.html', activeDepositAccounts=activeDepositAccounts)
 
 
+@app.route("/artificially_fund_deposit_account/<user_id>/<node_id>")
+def artificially_fund_deposit_account(user_id, node_id):
+    # If user is not logged in, have them log in
+    if not "name" in session:
+        flash('Please login first!')
+        return redirect(url_for('login'))
 
+    # Get user
+    user = client.get_user(user_id)
+
+    # Dummy-fund the account
+    user.dummy_tran(node_id, is_credit=True)
+
+    flash('Account funded successfully!', 'success')
+    return redirect(url_for('account'))
+
+
+@app.route("/send_money_between_deposit_accounts", methods=["POST"])
+def send_money_between_deposit_accounts():
+    # If user is not logged in, have them log in
+    if not "name" in session:
+        flash('Please login first!')
+        return redirect(url_for('login'))
+
+    # Get user
+    user = client.get_user(session['id'])
+
+    # Get both sender and receiver ids
+    sender_node_id = request.form['sender_node']
+    receiver_node_id = request.form['receiver_node']
+
+    print(f'sender id: {sender_node_id}', file=sys.stderr)
+    print(f'receiver id: {receiver_node_id}', file=sys.stderr)
+
+    # Make sure sender and receiver nodes are different
+    if sender_node_id == receiver_node_id:
+        flash('You must choose two separate accounts to send and receive funds')
+        return redirect(url_for('view_active_deposit_accounts'))
+
+    # Get sender nodes; we only need receiver id, not node, which we already have
+    sender_node = user.get_node(
+        sender_node_id, full_dehydrate=False, force_refresh=True)
+
+    # Make sure sender has sufficient funds available
+    if float(sender_node.body['info']['balance']['amount']) < float(request.form['transfer_amount']):
+        flash('Sorry, you have insufficient funds available. Please modify your request')
+        return redirect(url_for('view_active_deposit_accounts'))
+
+    # Transfer money
+    body = {
+        'to': {
+            'type': 'DEPOSIT-US',
+            'id': receiver_node_id
+        },
+        'amount': {
+            'amount': request.form['transfer_amount'],
+            'currency': 'USD'
+        },
+        'extra': {
+            'ip': '127.0.0.1',
+            'note': request.form['transfer_note']
+        }
+    }
+
+    user.create_trans(sender_node_id, body)
+
+    flash('Funds transferred successfully!', 'success')
+    return redirect(url_for('account'))

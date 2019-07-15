@@ -1,21 +1,22 @@
 {% extends "layout.html" %}
 {% block content %}
 
-<div class="container">
+<div class="d-flex flex-lg-column justify-content-center align-items-center">
 
-    <h1 class="mt-5 mb-5">Open Deposit Account</h1>
+    <div class="container centered-card">
 
-    <form method="post" action="/open_deposit_account">
+        <h1 class="mt-5 mb-5 underlined">Open Deposit Account</h1>
 
-        <label for="account_nickname" class="mb-3">Account Nickname</label>
-        <input id="account_nickname" name="account_nickname" class="form-control mb-2" type="text" placeholder="Account Nickname">
+        <form method="post" action="/open_deposit_account">
 
-        <button type="submit" class="btn btn-outline-primary mt-5">Open Deposit Account</button>
+            <h2 class="mb-3">Account Nickname</h2>
+            <input id="account_nickname" name="account_nickname" class="form-control mb-2" type="text"
+                placeholder="Account Nickname">
 
-    </form>
+            <button type="submit" class="btn btn-outline-primary mt-4">Open Deposit Account</button>
 
-    <div class="mt-5">
-        <a class="btn btn-sm btn-outline-secondary" href="{{ url_for('account') }}">Return to Account Home</a>
+        </form>
+
     </div>
 
 </div>

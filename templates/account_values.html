@@ -1,65 +1,31 @@
 {% extends "layout.html" %}
 {% block content %}
+<div class="d-flex flex-lg-column justify-content-center align-items-center">
 
-<div class="container">
+    <h1 class="underlined mt-5 mb-5">{{ first_name }}'s Account Values</h1>
 
-    <h1>{{ first_name }}'s Account Values</h1>
+    <div class="container centered-card">
 
-    <a class="text-muted">Name</a>
-    <a class="display-4">{{ values['name'] }}</a>
+        <div class="list-group">
 
-    <br>
+            {% for key in values.keys() %}
 
-    <a class="text-muted">Email</a>
-    <a class="display-4">{{ values['email'] }}</a>
+            <a class="list-group-item list-group-item-action">
+                <p class="card-title h2">{{ values[key]['name'] }}</p>
+                <p class="card-title h4">{{ values[key]['value'] }}</p>
+            </a>
 
-    <br>
+            {% endfor %}
 
-    <a class="text-muted">Phone Number</a>
-    <a class="display-4">{{ values['phone_number'] }}</a>
-
-    <br>
-
-    <a class="text-muted">Birth Date</a>
-    <a class="display-4">{{ values['birth_date'] }}</a>
-
-    <br>
-
-    <a class="text-muted">Street Address</a>
-    <a class="display-4">{{ values['address_street'] }}</a>
-
-    <br>
-
-    <a class="text-muted">City</a>
-    <a class="display-4">{{ values['address_city'] }}</a>
-
-    <br>
-
-    <a class="text-muted">State</a>
-    <a class="display-4">{{ values['address_subdivision'] }}</a>
-
-    <br>
-
-
-    <a class="text-muted">Postal Code</a>
-    <a class="display-4">{{ values['address_postal_code'] }}</a>
-
-    <br>
-
-    <a class="text-muted">Country Code</a>
-    <a class="display-4">{{ values['address_country_code'] }}</a>
-
-    <br>
-
-    <div class="mt-5">
-        <a class="btn btn-sm btn-outline-secondary" href="{{ url_for('account') }}">Return to Account Home</a>
-    </div>
-    
-    <div class="mt-3 mb-3">
-        <a class="btn btn-sm btn-outline-secondary" href="{{ url_for('update_account') }}">Update Account Values</a>
+        </div>
+        <div class="container centered-card">
+            <a class="btn btn-sm btn-outline-secondary wide-button mt-5 mb-5" href="{{ url_for('update_account') }}">Update Account Values</a>
+        </div>
     </div>
 
+    <div class="mt-3">
 
+    </div>
 
 </div>
 
