@@ -10,13 +10,15 @@ Completed: Monday July 15, 2019
 
 2 - Navigate to folder locally
 
-3 - Inside the folder, run the following bash command (with Docker Daemon running):
+3 - Change line 12 of docker-compose.yml to address the project’s location on your computer, instead of current address (requires absolute path)
+
+4 - Inside the folder, run the following bash command (with Docker Daemon running):
 
 ```
 docker-compose up -d
 ```
     
-4 - Go to the following address in your browser: http://localhost:5000/
+5 - Go to the following address in your browser: http://localhost:5000/
 
 
 # Project Structure:
