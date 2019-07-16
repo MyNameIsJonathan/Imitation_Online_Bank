@@ -1,0 +1,30 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<div class="d-flex flex-lg-column justify-content-center align-items-center">
+
+    <div class="container centered-card">
+
+        <h1 class="mt-5 mb-5 underlined">Close Crypto Account</h1>
+
+        <h3>{{ name }}</h3>
+
+        <form method="post" action="/close_crypto_account">
+
+            <div class="form-group">
+                <h2 class="mb-3">Select Account</h2>
+                <select class="form-control" id="account_choice" name="account_choice">
+                    {% for account in accounts %}
+                    <option value="{{  account['id']  }}">{{  account['name']  }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-outline-primary mt-3">Close Crypto Account</button>
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock content %}

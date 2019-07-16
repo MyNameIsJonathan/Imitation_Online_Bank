@@ -1,0 +1,58 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<div class="d-flex flex-lg-column justify-content-center align-items-center">
+
+    <div class="container centered-card">
+
+        <h1 class="mt-5 mb-5 underlined">Open Crypto Account</h1>
+
+        <form method="post" action="/open_crypto_account">
+
+            <h2 class="mb-3">Account Nickname</h2>
+            <input id="account_nickname" name="account_nickname" class="form-control mb-2" type="text"
+                placeholder="Account Nickname">
+
+            <button type="submit" class="btn btn-outline-primary mt-4">Open Crypto Account</button>
+
+        </form>
+
+    </div>
+
+</div>
+
+<div id="crypto-prices-display" class="container centered-card d-flex flex-lg-column justify-content-center align-items-center mb-5">
+
+    <h1 class="mt-5 mb-3 underlined">Today's Crypto Prices</h1>
+    
+    <div id="crypto-prices-display" class="d-flex flex-row justify-content-center align-items-center mt-4">
+    
+        <!-- Bitcoin -->
+        <div class="card account-card d-inline-flex p-2">
+            <h3 class="card-header d-flex justify-content-center text-center">
+                {{ 'Bitcoin' }}
+            </h3>
+            <div class="card-body">
+                <p id="account_value" class="account_value display-3 d-flex justify-content-center">
+                    ${{ quotes[0] }}</p>
+                <p class="account_currency display-4 d-flex justify-content-center">{{ 'USD' }}</p>
+            </div>
+        </div>
+    
+        <!-- Ethereum -->
+        <div class="card account-card d-inline-flex p-2">
+            <h3 class="card-header d-flex justify-content-center text-center">
+                {{ 'Ethereum' }}
+            </h3>
+            <div class="card-body">
+                <p id="account_value" class="account_value display-3 d-flex justify-content-center">
+                    ${{ quotes[1] }}</p>
+                <p class="account_currency display-4 d-flex justify-content-center">{{ 'USD' }}</p>
+            </div>
+        </div>
+    
+    </div>
+    
+    </div>
+
+{% endblock content %}

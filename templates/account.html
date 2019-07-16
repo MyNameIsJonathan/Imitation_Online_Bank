@@ -5,7 +5,7 @@
 
     <div class="container centered-card d-flex flex-lg-column justify-content-center align-items-center">
 
-        <h1 class="mt-5 mb-3">{{ name }}'s Account</h1>
+        <h1 class="mt-5 mb-3 underlined">{{ name }}'s Account</h1>
 
 
         <p class="text-muted mt-3 mb-3">Please select an option below</p>
@@ -17,28 +17,85 @@
                     Account Info</a>
             </div>
             <div class="mt-3 mb-2">
-                <a class="btn btn-sm btn-outline-secondary wide-button" href="{{ url_for('update_account') }}">Update Account
+                <a class="btn btn-sm btn-outline-secondary wide-button" href="{{ url_for('update_account') }}">Update
+                    Account
                     Info</a>
             </div>
             <div class="mt-3 mb-2">
-                <a class="btn btn-sm btn-outline-secondary wide-button" href="{{ url_for('open_deposit_account') }}">Open Deposit
+                <a class="btn btn-sm btn-outline-secondary wide-button"
+                    href="{{ url_for('open_deposit_account') }}">Open Deposit
                     Account</a>
             </div>
             <div class="mt-3 mb-2">
-                <a class="btn btn-sm btn-outline-secondary wide-button" href="{{ url_for('close_deposit_account') }}">Close Deposit
+                <a class="btn btn-sm btn-outline-secondary wide-button"
+                    href="{{ url_for('close_deposit_account') }}">Close Deposit
                     Account</a>
             </div>
             <div class="mt-3 mb-2">
-                <a class="btn btn-sm btn-outline-secondary wide-button" href="{{ url_for('view_active_deposit_accounts') }}">View
+                <a class="btn btn-sm btn-outline-secondary wide-button"
+                    href="{{ url_for('view_active_deposit_accounts') }}">View
                     Active
                     Deposit Accounts</a>
             </div>
-        </div <br>
+            <div class="mt-3 mb-2">
+                <a class="btn btn-sm btn-outline-secondary wide-button" href="{{ url_for('open_crypto_account') }}">Open
+                    Cypto Account</a>
+            </div>
+            <div class="mt-3 mb-2">
+                <a class="btn btn-sm btn-outline-secondary wide-button"
+                    href="{{ url_for('close_crypto_account') }}">Close Crypto
+                    Account</a>
+            </div>
+            <div class="mt-3 mb-2">
+                <a class="btn btn-sm btn-outline-secondary wide-button"
+                    href="{{ url_for('view_active_crypto_accounts') }}">View
+                    Crypto Account</a>
+            </div>
+            <div class="mt-3 mb-2">
+                <a class="btn btn-sm btn-outline-secondary wide-button"
+                    href="{{ url_for('buy_crypto') }}">Purchase Crypto Currency</a>
+            </div>
+        </div>
         <div class="mt-3 mb-2">
             <a class="btn btn-sm btn-outline-secondary" href="{{ url_for('logout') }}">Logout</a>
         </div>
 
     </div>
+
+</div>
+
+<!-- Crypto prices -->
+<div id="crypto-prices-display" class="container centered-card d-flex flex-lg-column justify-content-center align-items-center mb-5">
+
+<h1 class="mt-5 mb-3 underlined">Today's Crypto Prices</h1>
+
+<div id="crypto-prices-display" class="d-flex flex-row justify-content-center align-items-center mt-4">
+
+    <!-- Bitcoin -->
+    <div class="card account-card d-inline-flex p-2">
+        <h3 class="card-header d-flex justify-content-center text-center">
+            {{ 'Bitcoin' }}
+        </h3>
+        <div class="card-body">
+            <p id="account_value" class="account_value display-3 d-flex justify-content-center">
+                ${{ quotes[0] }}</p>
+            <p class="account_currency display-4 d-flex justify-content-center">{{ 'USD' }}</p>
+        </div>
+    </div>
+
+    <!-- Ethereum -->
+    <div class="card account-card d-inline-flex p-2">
+        <h3 class="card-header d-flex justify-content-center text-center">
+            {{ 'Ethereum' }}
+        </h3>
+        <div class="card-body">
+            <p id="account_value" class="account_value display-3 d-flex justify-content-center">
+                ${{ quotes[1] }}</p>
+            <p class="account_currency display-4 d-flex justify-content-center">{{ 'USD' }}</p>
+        </div>
+    </div>
+
+</div>
 
 </div>
 

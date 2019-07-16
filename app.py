@@ -6,15 +6,13 @@ import synapsepy
 import datetime
 import random
 
-import sys # TODO REMOVE
-# print(f'my string', file=sys.stderr) # TODO REMOVE
 
 # Create flask application
 app = Flask(__name__)
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
 
 # Configure flask app with link to mongodb using flask-pymongo. 
-app.config["MONGO_URI"] = "mongodb://mongodb:27017/flaskSite"
+app.config['MONGO_URI'] = 'mongodb://mongodb:27017/flaskSite'
 
 # Expose database as the db attribute.
 mongo = PyMongo(app)
@@ -34,9 +32,9 @@ bcrypt.init_app(app)
 
 
 
-@app.route("/")
+@app.route('/')
 def index():
-    if "name" in session:
+    if 'name' in session:
         return render_template('index.html', name=session['name'])
     return render_template('index.html')
 
@@ -47,7 +45,7 @@ def login():
     if request.method == "POST":
 
         # Look for account associated with provided email
-        user = mongo.db.users.find_one({"email" : request.form["email"]})
+        user = mongo.db.users.find_one({'email' : request.form['email']})
 
         # If user is found, make sure password matches. Login.
         if user:
@@ -107,48 +105,48 @@ def register():
             ip = '1.2.3.132'
             fingerprint = 'static_pin'
             body = {
-                "logins": [
+                'logins': [
                     {
-                        "email": "jonathanholson@gmail.com"
+                        'email': 'jonathanholson@gmail.com'
                     }
                 ],
-                "phone_numbers": [
-                    "901.111.1111",
-                    "jonathanholson@gmail.com"
+                'phone_numbers': [
+                    '901.111.1111',
+                    'jonathanholson@gmail.com'
                 ],
-                "legal_names": [
+                'legal_names': [
                     request.form['first_name'] + ' ' + request.form['last_name']
                 ],
-                "documents": [{
-                    "email":request.form["email"],
-                    "phone_number":request.form['phone_number'],
-                    "ip":ip,
-                    "name":request.form['first_name'] + ' ' + request.form['last_name'],
-                    "alias":"Test",
-                    "entity_type":"M",
-                    "entity_scope":"Arts & Entertainment",
-                    "day":birth_date.day,
-                    "month":birth_date.month,
-                    "year":birth_date.year,
-                    "address_street":request.form['street_address'],
-                    "address_city":request.form['city'],
-                    "address_subdivision":request.form['state'],
-                    "address_postal_code":request.form['postal_code'],
-                    "address_country_code":request.form['country_code'],
-                    "desired_scope": "SEND|RECEIVE|TIER|1",
-                    "doc_option_key": "INVESTOR_DOCS",
-                    "docs_key": "GOVT_ID_ONLY",
-                    "virtual_docs":[{
-                        "document_value":request.form['ssn'],
-                        "document_type":"SSN"
+                'documents': [{
+                    'email':request.form['email'],
+                    'phone_number':request.form['phone_number'],
+                    'ip':ip,
+                    'name':request.form['first_name'] + ' ' + request.form['last_name'],
+                    'alias':'Test',
+                    'entity_type':'M',
+                    'entity_scope':'Arts & Entertainment',
+                    'day':birth_date.day,
+                    'month':birth_date.month,
+                    'year':birth_date.year,
+                    'address_street':request.form['street_address'],
+                    'address_city':request.form['city'],
+                    'address_subdivision':request.form['state'],
+                    'address_postal_code':request.form['postal_code'],
+                    'address_country_code':request.form['country_code'],
+                    'desired_scope': 'SEND|RECEIVE|TIER|1',
+                    'doc_option_key': 'INVESTOR_DOCS',
+                    'docs_key': 'GOVT_ID_ONLY',
+                    'virtual_docs':[{
+                        'document_value': request.form['ssn'],
+                        'document_type':'SSN'
                     }],
-                    "physical_docs":[{
-                        "document_value": request.form['govtid'],
-                        "document_type": "GOVT_ID"
+                    'physical_docs':[{
+                        'document_value': request.form['govtid'],
+                        'document_type': 'GOVT_ID'
                     }],
-                    "social_docs":[{
-                        "document_value":"https://www.facebook.com/valid",
-                        "document_type":"FACEBOOK"
+                    'social_docs':[{
+                        'document_value':'https://www.facebook.com/valid',
+                        'document_type':'FACEBOOK'
                     }]
                 }]
             }
@@ -188,19 +186,26 @@ def register():
 
 @app.route("/account")
 def account():
-    # If user is logged in, render account page
-    if "name" in session:
-        return render_template('account.html', name=session['name'])
 
     # If user is not logged in, have them log in
-    flash('Please login first!')
-    return redirect(url_for('login'))
+    if not 'name' in session:
+        flash('Please login first!')
+        return redirect(url_for('login'))        
+
+    # Get crypto quotes
+    crypto_quotes = client.crypto_quotes()
+    crypto_quotes = [
+        '{:,}'.format(round(crypto_quotes['USDBTC'], 2)),
+        '{:,}'.format(round(crypto_quotes['USDETH'], 2))
+    ]
+
+    return render_template('account.html', name=session['name'], quotes=crypto_quotes)
 
 
 @app.route("/account_values", methods=["GET"])
 def account_values():
     # If user is not logged in, have them log in
-    if not "name" in session:
+    if not 'name' in session:
         flash('Please login first!')
         return redirect(url_for('login'))
 
@@ -209,21 +214,21 @@ def account_values():
 
     # Grab values to report
     values = {
-        "name": {'name': 'Name', 'value': user.body["documents"][0]["name"]},
-        "email": {'name': 'Email', 'value': user.body["documents"][0]["email"]},
-        "phone_number": {'name': 'Phone Number', 'value': user.body["documents"][0][
-            "phone_number"
+        'name': {'name': 'Name', 'value': user.body['documents'][0]['name']},
+        'email': {'name': 'Email', 'value': user.body['documents'][0]['email']},
+        'phone_number': {'name': 'Phone Number', 'value': user.body['documents'][0][
+            'phone_number'
         ]},
-        "birth_date": {'name': 'Birth Date', 'value': str(user.body["documents"][0]["month"])
-        + "/"
-        + str(user.body["documents"][0]["day"])
-        + "/"
-        + str(user.body["documents"][0]["year"])},
-        "address_street": {'name': 'Street Address', 'value': user.body['documents'][0]['address_street']},
-        "address_city": {'name': 'City', 'value': user.body['documents'][0]['address_city']},
-        "address_subdivision": {'name': 'State', 'value': user.body['documents'][0]['address_subdivision']},
-        "address_postal_code": {'name': 'Postal Code', 'value': user.body['documents'][0]['address_postal_code']},
-        "address_country_code": {'name': 'Country', 'value': user.body['documents'][0]['address_country_code']}
+        'birth_date': {'name': 'Birth Date', 'value': str(user.body['documents'][0]['month'])
+        + '/'
+        + str(user.body['documents'][0]['day'])
+        + '/'
+        + str(user.body['documents'][0]['year'])},
+        'address_street': {'name': 'Street Address', 'value': user.body['documents'][0]['address_street']},
+        'address_city': {'name': 'City', 'value': user.body['documents'][0]['address_city']},
+        'address_subdivision': {'name': 'State', 'value': user.body['documents'][0]['address_subdivision']},
+        'address_postal_code': {'name': 'Postal Code', 'value': user.body['documents'][0]['address_postal_code']},
+        'address_country_code': {'name': 'Country', 'value': user.body['documents'][0]['address_country_code']}
     }
     
     return render_template('account_values.html', 
@@ -234,7 +239,7 @@ def account_values():
 @app.route("/update_account", methods=["GET", "POST"])
 def update_account():
     # If user is not logged in, have them log in
-    if not "name" in session:
+    if not 'name' in session:
         flash('Please login first!')
         return redirect(url_for('login'))
 
@@ -260,30 +265,36 @@ def update_account():
     choice = request.form['update_choice']
 
     if choice == 'email':
-        body['documents'] = [{'email':request.form['update_value']}]
+        body['documents'] = [{'email': request.form['update_value']}]
         body['logins'] = [{'email': request.form['email']}]
     elif choice == 'name':
-        body['documents'] = [{'name':request.form['update_value']}]
+        body['documents'] = [{'name': request.form['update_value']}]
         body['legal_names'] = [request.form['update_value']]
     elif choice == 'phone_number':
-        body['documents'] = [{'phone_number':request.form['update_value']}]
-        body["phone_numbers"] = [request.form['phone_number']]
+        body['documents'] = [{'phone_number': request.form['update_value']}]
+        body['phone_numbers'] = [request.form['phone_number']]
     elif choice == 'birth_date':
-        pass
+        birth_date = datetime.datetime.strptime(
+            request.form['update_value'], '%m-%d-%Y')
+        body['documents'] = [{
+            'year': birth_date.year,
+            'month': birth_date.month,
+            'day': birth_date.day
+        }]
     elif choice == 'street_address':
-        body['documents'] = [{'street_address':request.form['update_value']}]
+        body['documents'] = [{'street_address': request.form['update_value']}]
     elif choice == 'city':
-        body['documents'] = [{'city':request.form['update_value']}]
+        body['documents'] = [{'city': request.form['update_value']}]
     elif choice == 'state':
-        body['documents'] = [{'state':request.form['update_value']}]
+        body['documents'] = [{'state': request.form['update_value']}]
     elif choice == 'postal_code':
-        body['documents'] = [{'postal_code':request.form['update_value']}]
+        body['documents'] = [{'postal_code': request.form['update_value']}]
     elif choice == 'country_code':
-        body['documents'] = [{'country_code':request.form['update_value']}]
+        body['documents'] = [{'country_code': request.form['update_value']}]
     elif choice == 'ssn':
-        body["virtual_docs"] = [{
-                "document_value":request.form['ssn'],
-                "document_type":"SSN"
+        body['virtual_docs'] = [{
+            'document_value': request.form['ssn'],
+            'document_type':'SSN'
         }]
 
     # Payload needs the following basic entities. Instantiate with current user values
@@ -305,21 +316,21 @@ def update_account():
     user.update_info(body)
 
     # Update session values and mongodb
-    mongoUser = mongo.db.users.find_one({"email" : session["email"]})
+    mongoUser = mongo.db.users.find_one({'email' : session['email']})
     if choice == 'email':
         session['email'] = request.form['update_value']
         mongo.db.users.update_one(
             {'synapse_id': user.id},
-            {"$set": {
+            {'$set': {
                 choice: request.form['update_value']}
             },
             upsert=False)
     elif choice == 'name':
-        names = request.form["update_value"].split()
+        names = request.form['update_value'].split()
         session['name'] = request.form['update_value']
         mongo.db.users.update_many(
             {'synapse_id': user.id},
-            {"$set": {
+            {'$set': {
                 'first_name': names[0],
                 'last_name': names[1]}
             },
@@ -327,7 +338,7 @@ def update_account():
     else:
         mongo.db.users.update_one(
             {'synapse_id': user.id},
-            {"$set": {
+            {'$set': {
                 choice: request.form['update_value']}
             },
             upsert=False)
@@ -343,7 +354,7 @@ def update_account():
 @app.route("/open_deposit_account", methods=["GET", "POST"])
 def open_deposit_account():
     # If user is not logged in, have them log in
-    if not "name" in session:
+    if not 'name' in session:
         flash('Please login first!')
         return redirect(url_for('login'))
 
@@ -356,10 +367,12 @@ def open_deposit_account():
 
     # Create body to hold deposit account information
     body = {
-        "type": "DEPOSIT-US",
-        "info": {
-            "nickname": request.form['account_nickname'],
-            "document_id": user.body['documents'][0]['id']
+        'type': 'DEPOSIT-US',
+        'info': {
+            'nickname': request.form['account_nickname'] if 
+            request.form['account_nickname'] else 
+            'My New Deposit Account',
+            'document_id': user.body['documents'][0]['id']
         }
     }
 
@@ -396,17 +409,18 @@ def close_deposit_account():
         return render_template('close_deposit_account.html', accounts=accounts)
     
     # If method is POST, get the chosen account, set to inactive
-    node = request.form['account_choice']
-    node.body['is_active'] = False
+    node = user.get_node(
+        request.form['account_choice'], full_dehydrate=False, force_refresh=True)
+    user.delete_node(node.id)
 
-    flash('Account successfully inactivate!', 'success')
+    flash('Account closed successfully!', 'success')
     return redirect(url_for('account'))
 
 
 @app.route("/view_active_deposit_accounts")
 def view_active_deposit_accounts():
     # If user is not logged in, have them log in
-    if not "name" in session:
+    if not 'name' in session:
         flash('Please login first!')
         return redirect(url_for('login'))
 
@@ -429,7 +443,7 @@ def view_active_deposit_accounts():
     for i, node in enumerate(depositAccounts):
         activeDepositAccounts.append({
             'node_name': node.body['info']['nickname'],
-            'node_value': node.body['info']['balance']['amount'],
+            'node_value': '{:,}'.format(node.body['info']['balance']['amount']),
             'node_currency': node.body['info']['balance']['currency'],
             'user_id': user.id,
             'node_id': node.id
@@ -441,7 +455,7 @@ def view_active_deposit_accounts():
 @app.route("/artificially_fund_deposit_account/<user_id>/<node_id>")
 def artificially_fund_deposit_account(user_id, node_id):
     # If user is not logged in, have them log in
-    if not "name" in session:
+    if not 'name' in session:
         flash('Please login first!')
         return redirect(url_for('login'))
 
@@ -458,7 +472,7 @@ def artificially_fund_deposit_account(user_id, node_id):
 @app.route("/send_money_between_deposit_accounts", methods=["POST"])
 def send_money_between_deposit_accounts():
     # If user is not logged in, have them log in
-    if not "name" in session:
+    if not 'name' in session:
         flash('Please login first!')
         return redirect(url_for('login'))
 
@@ -502,7 +516,197 @@ def send_money_between_deposit_accounts():
         }
     }
 
+    # This process is marked as high-risk by synapse and the trans is canceleld. 
+    # Comment this functionality out, even though it otherwise is fully functional
     user.create_trans(sender_node_id, body)
 
-    flash('Funds transferred successfully!', 'success')
+    flash(('Funds transferred successfully! Transaction will be completed within '
+           '1-3 business days'), 'success')
+    return redirect(url_for('account'))
+
+
+@app.route("/open_crypto_account", methods=["GET", "POST"])
+def open_crypto_account():
+    # If user is not logged in, have them log in
+    if not 'name' in session:
+        flash('Please login first!')
+        return redirect(url_for('login'))
+
+    # If method is GET, render html
+    if request.method == "GET":
+
+        # Get crypto quotes
+        crypto_quotes = client.crypto_quotes()
+        crypto_quotes = [
+            '{:,}'.format(round(crypto_quotes['USDBTC'], 2)),
+            '{:,}'.format(round(crypto_quotes['USDETH'], 2))
+        ]
+
+        return render_template('open_crypto_account.html', quotes=crypto_quotes)
+
+    # Select the current user's synapse account
+    user = client.get_user(session['id'])
+
+    # Create body to hold deposit account information
+    body = {
+        'type': 'CRYPTO-US',
+        'info': {
+            'nickname': request.form['account_nickname'] if
+            request.form['account_nickname'] else
+            'My New Crypto Account'
+        }
+    }
+
+    # Open deposit account
+    user.create_node(body)
+
+    flash('Crypto account created successfully!', 'success')
+    return redirect(url_for('account'))
+
+
+@app.route("/close_crypto_account", methods=["GET", "POST"])
+def close_crypto_account():
+    # If user is not logged in, have them log in
+    if not 'name' in session:
+        flash('Please login first!')
+        return redirect(url_for('login'))
+
+    # Get user account
+    user = client.get_user(session['id'])
+
+    # If method if GET
+    if request.method == "GET":
+
+        # Get deposit account(s)
+        nodes = user.get_all_nodes().list_of_nodes
+        crypto_accounts = [node for node in nodes if node.body['type'] == 'CRYPTO-US']
+
+        # Save account(s) in list of dicts
+        accounts = [
+            {'id': node.id, 'name': node.body['info']['nickname']}
+            for node in crypto_accounts
+        ]
+
+        return render_template('close_crypto_account.html', accounts=accounts)
+    
+    # If method is POST, get the chosen account, delete
+    node = user.get_node(
+        request.form['account_choice'], full_dehydrate=False, force_refresh=True)
+    user.delete_node(node.id)
+
+    flash('Account closed successfully!', 'success')
+    return redirect(url_for('account'))
+
+
+@app.route("/view_active_crypto_accounts")
+def view_active_crypto_accounts():
+    # If user is not logged in, have them log in
+    if not 'name' in session:
+        flash('Please login first!')
+        return redirect(url_for('login'))
+
+    # Get user
+    user = client.get_user(session['id'], full_dehydrate=True)
+
+    # Get all nodes (accounts) of user; select only deposit accounts
+    nodes = user.get_all_nodes().list_of_nodes
+    cryptoAccounts = [node for node in nodes if (
+        node.body['type'] == 'CRYPTO-US' and node.body['is_active'])]
+
+    # If no accounts found, inform user to open an account
+    if len(cryptoAccounts) == 0:
+        alert('No active crypto accounts found! Please open an account first', 'danger')
+        return redirect(url_for('open_crypto_account'))
+
+    # Get crypto quotes
+    crypto_quotes = client.crypto_quotes()
+    crypto_quotes_formatted = [
+        '{:,}'.format(round(crypto_quotes['USDBTC'], 2)),
+        '{:,}'.format(round(crypto_quotes['USDETH'], 2))
+    ]
+
+    # If accounts found, get their information
+    activeCryptoAccounts = []
+
+    # We need a producrtion account for this to actually work; supply example account
+    activeCryptoAccounts.append({
+            'node_name': 'Example Crypto Account',
+            'node_id': '123456789',
+            'count_btc': 3.2,
+            'value_btc': '{:,}'.format(round(3.2 * crypto_quotes['USDBTC'])),
+            'count_eth': 7.2,
+            'value_eth': '{:,}'.format(round(7.2 * crypto_quotes['USDETH']))
+        })
+
+    for node in cryptoAccounts:
+        activeCryptoAccounts.append({
+            'user_id': user.id,
+            'node_name': node.body['info']['nickname'],
+            'node_id': node.id,
+            'count_btc': node.body['info']['portfolio']['BTC'],
+            'value_btc': '{:,}'.format(round(node.body['info']['portfolio']['BTC'] * crypto_quotes['USDBTC'])),
+            'count_eth': node.body['info']['portfolio']['ETH'],
+            'value_eth': '{:,}'.format(round(node.body['info']['portfolio']['ETH'] * crypto_quotes['USDETH']))
+        })
+
+    return render_template('view_active_crypto_accounts.html', cryptoAccounts=activeCryptoAccounts)
+
+
+@app.route("/buy_crypto", methods=["GET" ,"POST"])
+def buy_crypto():
+    # If user is not logged in, have them log in
+    if not 'name' in session:
+        flash('Please login first!')
+        return redirect(url_for('login'))
+
+    # Get user
+    user = client.get_user(session['id'])
+
+    if request.method == "GET":
+
+        # Get all accounts
+        nodes = user.get_all_nodes().list_of_nodes
+        depositAccounts = [node for node in nodes if (
+            node.body['type'] == 'DEPOSIT-US' and node.body['is_active'])]
+        cryptoAccounts = [node for node in nodes if (
+            node.body['type'] == 'CRYPTO-US' and node.body['is_active'])]
+
+        # Alert if no accounts found
+        if len(depositAccounts) == 0:
+            flash('No deposit accounts found! Please open and fund an account before purchasing crypto currencies')
+            return redirect(url_for('account'))
+        elif len(cryptoAccounts) == 0:
+            flash('No crypto accounts found! Please open a crypto account before purchasing crypto currencies')
+            return redirect(url_for('account'))
+
+        return render_template(
+            'buy_crypto.html',
+            depositAccounts=depositAccounts,
+            cryptoAccounts=cryptoAccounts
+        )
+
+    # Get purchase information
+    body = {
+        'to': {
+            'type': 'CRYPTO-US',
+            'id': request.form['receiver_node']
+        },
+       'amount': {
+           'amount': request.form['purchase_amount'],
+            'currency': 'USD'
+        },
+        'extra': {
+            'ip': '127.0.0.1',
+            'note': request.form['transaction_note'],
+            'asset': request.form['crypto_type']
+        }
+    }
+
+    # This process is marked as high-risk by synapse and the trans is canceleld. 
+    # Comment this functionality out, even though it otherwise is fully functional
+    user.create_trans(request.form['purchaser_node'], body)
+
+
+    flash(('Crypto coins purchased successfully! Transaction will be completed within '
+           '1-3 business days'), 'success')
     return redirect(url_for('account'))

@@ -1,0 +1,52 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<div class="d-flex flex-lg-column justify-content-center align-items-center">
+
+    <div class="container centered-card">
+
+        <h1 class="mt-5 mb-5 underlined">Purchase Cryptocurrency</h1>
+
+        <form method="post" action="/buy_crypto">
+
+            <h2 class="mb-3">Purchase with Account</h2>
+            <select class="form-control" id="purchaser_node" name="purchaser_node">
+                {% for node in depositAccounts %}
+                    <option value="{{  node.id  }}">{{  node.body['info']['nickname']  }}</option>
+                {% endfor %}
+            </select>
+
+            <h2 class="mb-3 mt-5">Deposit Crypto to Account</h2>
+            <select class="form-control" id="receiver_node" name="receiver_node">
+                {% for node in cryptoAccounts %}
+                    <option value="{{  node.id  }}">{{  node.body['info']['nickname']  }}</option>
+                {% endfor %}
+            </select>
+
+            <h2 class="mb-3 mt-5">Crypto Type to Purchase</h2>
+            <select class="form-control" id="crypto_type" name="crypto_type">
+                <option value="BTC">Bitcoin</option>
+                <option value="ETH">Ethereum</option>
+            </select>
+
+            <h2 class="mb-3 mt-5">Amount to Purchase <a class="text-muted">(In $USD)</a></h2>
+            <div class="input-group mb-5">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">$</span>
+                </div>
+                <input name="purchase_amount" type="text" class="form-control" aria-label="Transfer Amount"
+                    placeholder="0.00">
+            </div>
+
+            <input id="transaction_note" name="transaction_note" class="form-control mb-5" type="text"
+            placeholder="Transaction note...">
+
+            <button type="submit" class="btn btn-outline-primary mt-4">Purchase Crypto</button>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock content %}
