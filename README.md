@@ -12,9 +12,9 @@ Completed: Monday July 15, 2019
 
 3 - Inside the folder, run the following bash command (with Docker Daemon running):
 
-    ```
-    docker-compose up -d
-    ```
+```
+docker-compose up -d
+```
     
 4 - Go to the following address in your browser: http://localhost:5000/
 
